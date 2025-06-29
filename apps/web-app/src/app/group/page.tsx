@@ -6,7 +6,7 @@ import IconRefreshLine from "@/icons/IconRefreshLine"
 import { Box, Button, Divider, Heading, HStack, Link, Text, useBoolean, VStack } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo } from "react"
-import Feedback from "../../../contract-artifacts/Feedback.json"
+import ZKVote from "../../../contract-artifacts/ZKVote.json"
 import { ethers } from "ethers"
 import useSemaphoreIdentity from "@/hooks/useSemaphoreIdentity"
 
@@ -19,7 +19,7 @@ export default function GroupsPage() {
 
     useEffect(() => {
         if (_users.length > 0) {
-            setLog(`${_users.length} user${_users.length > 1 ? "s" : ""} retrieved from the group 🤙🏽`)
+            setLog(`${_users.length} voter${_users.length > 1 ? "s" : ""} retrieved from the voting group 🤙🏽`)
         }
     }, [_users, setLog])
 
@@ -31,7 +31,7 @@ export default function GroupsPage() {
         }
 
         setLoading.on()
-        setLog(`Joining the Feedback group...`)
+        setLog(`Joining the ZK Vote group...`)
 
         let joinedGroup: boolean = false
 
@@ -40,8 +40,8 @@ export default function GroupsPage() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    abi: Feedback.abi,
-                    address: process.env.NEXT_PUBLIC_FEEDBACK_CONTRACT_ADDRESS as string,
+                    abi: ZKVote.abi,
+                    address: process.env.NEXT_PUBLIC_ZKVOTE_CONTRACT_ADDRESS as string,
                     functionName: "joinGroup",
                     functionParameters: [_identity.commitment.toString()]
                 })
@@ -55,10 +55,10 @@ export default function GroupsPage() {
             process.env.NEXT_PUBLIC_GELATO_RELAYER_CHAIN_ID &&
             process.env.GELATO_RELAYER_API_KEY
         ) {
-            const iface = new ethers.Interface(Feedback.abi)
+            const iface = new ethers.Interface(ZKVote.abi)
             const request = {
                 chainId: process.env.NEXT_PUBLIC_GELATO_RELAYER_CHAIN_ID,
-                target: process.env.NEXT_PUBLIC_FEEDBACK_CONTRACT_ADDRESS,
+                target: process.env.NEXT_PUBLIC_ZKVOTE_CONTRACT_ADDRESS,
                 data: iface.encodeFunctionData("joinGroup", [_identity.commitment.toString()]),
                 sponsorApiKey: process.env.GELATO_RELAYER_API_KEY
             }
@@ -88,7 +88,7 @@ export default function GroupsPage() {
         if (joinedGroup) {
             addUser(_identity.commitment.toString())
 
-            setLog(`You have joined the Feedback group event 🎉 Share your feedback anonymously!`)
+            setLog(`You have joined the ZK Vote group! You can now vote anonymously 🎉`)
         } else {
             setLog("Some error occurred, please try again!")
         }
@@ -104,7 +104,7 @@ export default function GroupsPage() {
     return (
         <>
             <Heading as="h2" size="xl">
-                Groups
+                Voting Group
             </Heading>
 
             <Text pt="2" fontSize="md">
@@ -115,15 +115,14 @@ export default function GroupsPage() {
                 <Link href="https://zkkit.pse.dev/modules/_zk_kit_lean_imt.html" isExternal>
                     Lean incremental Merkle trees
                 </Link>{" "}
-                in which each leaf contains an identity commitment for a user. Groups can be abstracted to represent
-                events, polls, or organizations.
+                in which each leaf contains an identity commitment for a voter. Join this group to participate in anonymous voting.
             </Text>
 
             <Divider pt="5" borderColor="gray.500" />
 
             <HStack py="5" justify="space-between">
                 <Text fontWeight="bold" fontSize="lg">
-                    Group users ({_users.length})
+                    Group voters ({_users.length})
                 </Text>
                 <Button leftIcon={<IconRefreshLine />} variant="link" color="text.300" onClick={refreshUsers} size="lg">
                     Refresh
@@ -149,7 +148,7 @@ export default function GroupsPage() {
                     isDisabled={_loading || !_identity || userHasJoined}
                     onClick={joinGroup}
                 >
-                    Join group
+                    Join voting group
                 </Button>
             </Box>
 

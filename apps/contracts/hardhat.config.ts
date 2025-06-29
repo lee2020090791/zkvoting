@@ -10,6 +10,8 @@ import { NetworksUserConfig } from "hardhat/types"
 import { resolve } from "path"
 import "solidity-coverage"
 import "./tasks/deploy"
+import "./tasks/setup-vote-options"
+import "./tasks/check-group"
 
 dotenvConfig({ path: resolve(__dirname, "../../.env") })
 

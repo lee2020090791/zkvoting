@@ -1,6 +1,6 @@
 import { Contract, InfuraProvider, JsonRpcProvider, Wallet } from "ethers"
 import { NextRequest } from "next/server"
-import Feedback from "../../../../contract-artifacts/Feedback.json"
+import ZKVote from "../../../../contract-artifacts/ZKVote.json"
 
 export async function POST(req: NextRequest) {
     if (typeof process.env.ETHEREUM_PRIVATE_KEY !== "string") {
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const ethereumPrivateKey = process.env.ETHEREUM_PRIVATE_KEY
     const ethereumNetwork = process.env.NEXT_PUBLIC_DEFAULT_NETWORK as string
     const infuraApiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY as string
-    const contractAddress = process.env.NEXT_PUBLIC_FEEDBACK_CONTRACT_ADDRESS as string
+    const contractAddress = process.env.NEXT_PUBLIC_ZKVOTE_CONTRACT_ADDRESS as string
 
     const provider =
         ethereumNetwork === "localhost"
@@ -18,12 +18,20 @@ export async function POST(req: NextRequest) {
             : new InfuraProvider(ethereumNetwork, infuraApiKey)
 
     const signer = new Wallet(ethereumPrivateKey, provider)
-    const contract = new Contract(contractAddress, Feedback.abi, signer)
+    const contract = new Contract(contractAddress, ZKVote.abi, signer)
 
     const { feedback, merkleTreeDepth, merkleTreeRoot, nullifier, points } = await req.json()
 
     try {
-        const transaction = await contract.sendFeedback(merkleTreeDepth, merkleTreeRoot, nullifier, feedback, points)
+        // 투표 옵션 인덱스 계산
+        const voteOptions = ["Option A", "Option B", "Option C", "Option D"]
+        const voteOption = voteOptions.indexOf(feedback)
+        
+        if (voteOption === -1) {
+            throw new Error("Invalid vote option")
+        }
+
+        const transaction = await contract.castVote(merkleTreeDepth, merkleTreeRoot, nullifier, voteOption, points)
 
         await transaction.wait()
 

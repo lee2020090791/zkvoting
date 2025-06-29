@@ -22,7 +22,7 @@ export default function IdentitiesPage() {
 
             setLog("Your Semaphore identity has been retrieved from the browser cache 👌🏽")
         } else {
-            setLog("Create your Semaphore identity 👆🏽")
+            setLog("Create your Semaphore identity to start voting anonymously 👆🏽")
         }
     }, [setLog])
 
@@ -39,22 +39,22 @@ export default function IdentitiesPage() {
     return (
         <>
             <Heading as="h2" size="xl">
-                Identities
+                ZK Vote - Anonymous Voting
             </Heading>
 
             <Text pt="2" fontSize="md">
-                The identity of a user in the Semaphore protocol. A{" "}
+                Welcome to ZK Vote! Create your{" "}
                 <Link href="https://docs.semaphore.pse.dev/guides/identities" isExternal>
                     Semaphore identity
                 </Link>{" "}
-                consists of an{" "}
+                to participate in anonymous voting. A{" "}
                 <Link
                     href="https://github.com/privacy-scaling-explorations/zk-kit/tree/main/packages/eddsa-poseidon"
                     isExternal
                 >
-                    EdDSA
+                    Semaphore identity
                 </Link>{" "}
-                public/private key pair and a commitment, used as the public identifier of the identity.
+                consists of an EdDSA public/private key pair and a commitment, used as the public identifier of the identity.
             </Text>
 
             <Divider pt="5" borderColor="gray.500" />

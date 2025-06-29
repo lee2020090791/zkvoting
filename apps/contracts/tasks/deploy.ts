@@ -1,6 +1,6 @@
 import { task, types } from "hardhat/config"
 
-task("deploy", "Deploy a Feedback contract")
+task("deploy", "Deploy a ZKVote contract")
     .addOptionalParam("semaphore", "Semaphore contract address", undefined, types.string)
     .addOptionalParam("logs", "Print the logs", true, types.boolean)
     .setAction(async ({ logs, semaphore: semaphoreAddress }, { ethers, run }) => {
@@ -12,19 +12,19 @@ task("deploy", "Deploy a Feedback contract")
             semaphoreAddress = await semaphore.getAddress()
         }
 
-        const FeedbackFactory = await ethers.getContractFactory("Feedback")
+        const ZKVoteFactory = await ethers.getContractFactory("ZKVote")
 
-        const feedbackContract = await FeedbackFactory.deploy(semaphoreAddress)
+        const zkvoteContract = await ZKVoteFactory.deploy(semaphoreAddress)
 
-        await feedbackContract.waitForDeployment()
+        await zkvoteContract.waitForDeployment()
 
-        const groupId = await feedbackContract.groupId()
+        const groupId = await zkvoteContract.groupId()
 
         if (logs) {
             console.info(
-                `Feedback contract has been deployed to: ${await feedbackContract.getAddress()} (groupId: ${groupId})`
+                `ZKVote contract has been deployed to: ${await zkvoteContract.getAddress()} (groupId: ${groupId})`
             )
         }
 
-        return feedbackContract
+        return zkvoteContract
     })
